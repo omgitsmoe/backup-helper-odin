@@ -1,5 +1,7 @@
 package glob
 
+// modified 2026 omgitsmoe
+
 import "core:log"
 import "core:testing"
 
@@ -65,8 +67,7 @@ match_test :: proc(t: ^testing.T) {
 	expect_match(t, "/**/bin", "/foo/bar/bin", true)
 	expect_match(t, "/**/bin", "/foo/bar/hellope", false)
 	expect_match(t, "/**/bin", "//bin", true)
-	expect_match(t, "/**/bin", "/bin", false)
-	// TODO: fix
+	expect_match(t, "/**/bin", "/bin", true)
 	expect_match(t, "**/bin", "/bin", true)
 	expect_match(t, "*/bin", "/bin", true)
 	expect_match(t, "*/bin", "bin", false)
@@ -118,6 +119,59 @@ match_test :: proc(t: ^testing.T) {
 
 	expect_match(t, "/foo/**/[a-zA-Z]elp", "/foo//welp", true)
 	expect_match(t, "/foo/**/[a-zA-Z]elp", "/foo/bar/Help", true)
+
+	expect_match(t, "*.go", "foo.go", true)
+	expect_match(t, "bar/*", "bar/xer.bin", true)
+	// ** should match zero path components
+	expect_match(t, "**/*.go", "foo.go", true)
+	expect_match(t, "bar/**/*", "bar/xer.bin", true)
+
+	// globstar zero-directory in various positions
+	expect_match(t, "**/foo", "foo", true)
+	expect_match(t, "a/**/b", "a/b", true)
+	expect_match(t, "a/**/b/c", "a/b/c", true)
+	expect_match(t, "/**/foo", "/foo", true)
+	expect_match(t, "**/foo/bar", "foo/bar", true)
+
+	// globstar matching one or more directories
+	expect_match(t, "**/foo", "x/foo", true)
+	expect_match(t, "**/foo", "x/y/z/foo", true)
+	expect_match(t, "a/**/b", "a/x/y/b", true)
+	expect_match(t, "/**/foo/**/bar", "/foo/bar", true)
+	expect_match(t, "/**/foo/**/bar", "/x/foo/y/bar", true)
+
+	// globstar non-match
+	expect_match(t, "a/**/b", "a/xb", false)
+	expect_match(t, "**/foo", "/foo", true)
+
+	// globstar + *
+	expect_match(t, "**/*", "foo", true)
+
+	// globstar at end (matches everything below)
+	expect_match(t, "/foo/**", "/foo/bar", true)
+	expect_match(t, "/foo/**", "/foo/bar/baz", true)
+
+	// escaping
+	expect_match(t, `foo\*bar`, "foo*bar", true)
+	expect_match(t, `foo\?bar`, "foo?bar", true)
+
+	// negated char class
+	expect_match(t, "[!abc]", "d", true)
+	expect_match(t, "[!abc]", "a", false)
+
+	// alternation nested with globstar
+	expect_match(t, "x/{**/bin,bin}", "x/bin", true)
+	expect_match(t, "x/{**/bin,bin}", "x/a/bin", true)
+	expect_match(t, "x/{**/bin,bin}", "x/a/b/bin", true)
+
+	// multiple globstar
+	expect_match(t, "a/**/b/**/c", "a/b/c", true)
+	expect_match(t, "a/**/b/**/c", "a/x/b/y/c", true)
+	expect_match(t, "a/**/b/**/c", "a/x/y/b/z/w/c", true)
+
+    // literal
+	expect_match(t, "foo.go", "foo.go", true)
+	expect_match(t, "foo/bar", "foo/bar", true)
 }
 
 @(private)

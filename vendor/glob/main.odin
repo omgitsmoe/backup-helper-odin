@@ -3,7 +3,7 @@ package glob
 import "core:flags"
 import "core:fmt"
 import "core:log"
-import "core:os/os2"
+import "core:os"
 import "core:path/filepath"
 
 Opts :: struct {
@@ -13,7 +13,7 @@ Opts :: struct {
 main :: proc() {
 	context.logger = log.create_console_logger(opt = {.Level, .Terminal_Color})
 	opts: Opts
-	err := flags.parse(&opts, os2.args[1:])
+	err := flags.parse(&opts, os.args[1:])
 	if err != nil {
 		log.error(err)
 		return
@@ -29,13 +29,13 @@ main :: proc() {
 		}
 		defer pattern_destroy(&pat)
 
-		cwd, _ := os2.get_working_directory(context.allocator)
+		cwd, _ := os.get_working_directory(context.allocator)
 		defer delete(cwd)
 		log.debug("CWD:", cwd)
 
-		walker := os2.walker_create(cwd)
-		defer os2.walker_destroy(&walker)
-		for fi in os2.walker_walk(&walker) {
+		walker := os.walker_create(cwd)
+		defer os.walker_destroy(&walker)
+		for fi in os.walker_walk(&walker) {
 			path_rel, _ := filepath.rel(cwd, fi.fullpath)
 			if match(pat, path_rel) {
 				fmt.println(path_rel)

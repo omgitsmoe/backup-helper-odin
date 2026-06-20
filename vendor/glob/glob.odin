@@ -1,5 +1,7 @@
 package glob
 
+// modified 2026 omgitsmoe
+
 import "core:log"
 import "core:math"
 import "core:mem/virtual"
@@ -127,19 +129,26 @@ _match :: proc(prepared: []Node, runes: []rune) -> (end_idx: int, matched: bool)
 				if r != '/' && r != '\\' {return}
 				pos += 1
 			case .Globstar:
-				last_off := 0
+				next_i := node_i + 1
+				if next_i < len(prepared) {
+					if s, ok := prepared[next_i].(Node_Symbol); ok && s == .Slash {
+						next_i += 1
+					}
+				}
+				if end_idx, matched := _match(prepared[next_i:], runes[pos:]); matched {
+					return end_idx, true
+				}
 				for r, i in runes[pos:] {
 					if r == '/' || r == '\\' {
-						last_off = i
 						if end_idx, matched := _match(
 							prepared[node_i + 1:],
-							runes[pos + last_off:],
+							runes[pos + i:],
 						); matched {
 							return end_idx, true
 						}
 					}
 				}
-				pos = last_off + pos
+				return
 
 			case .Any_Text:
 				for r, i in runes[pos:] {
