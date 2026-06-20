@@ -1,0 +1,10 @@
+{
+    "dependencies": [
+        {
+            "name": "glob",
+            "url": "https://github.com/lzurbriggen/glob",
+            "version": "21006074fa6e9d368f05fc1021a9735e2bc6f11a",
+            "path": "vendor/glob"
+        }
+    ]
+}
