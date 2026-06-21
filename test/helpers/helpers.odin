@@ -56,3 +56,27 @@ temp_dir :: proc(t: ^testing.T, loc := #caller_location) -> string {
 
     return test_dir
 }
+
+dummy_root :: proc() -> string {
+    when ODIN_OS == .Windows {
+        return "C:\\"
+    } else {
+        return "/"
+    }
+}
+
+dummy_abs_dir :: proc() -> string {
+    when ODIN_OS == .Windows {
+        return "C:\\dummy_dir"
+    } else {
+        return "/dummy_dir"
+    }
+}
+
+dummy_abs_file :: proc() -> string {
+    when ODIN_OS == .Windows {
+        return "C:\\dummy_dir\\file.txt"
+    } else {
+        return "/dummy_dir/file.txt"
+    }
+}
