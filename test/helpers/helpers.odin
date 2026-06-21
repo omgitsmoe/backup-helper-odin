@@ -4,7 +4,6 @@ import "core:path/filepath"
 import "core:testing"
 import "core:time"
 import "core:os"
-import "core:log"
 
 Test_File :: struct {
     relative_path: string,
@@ -31,7 +30,6 @@ create_test_files :: proc(t: ^testing.T, root: string, files: []Test_File) {
         write_err := os.write_entire_file(abs, contents)
         testing.expect(t, write_err == nil)
 
-        zero_time := time.Time{}
         if file.mtime != time.Time({}) {
             err := os.change_times(abs, file.mtime, file.mtime)
             testing.expect(t, err == nil)
