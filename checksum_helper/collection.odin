@@ -15,10 +15,18 @@ Collection :: struct {
 
 CollectionError :: union {
 	Path_Not_Absolute,
+	Missing_Path,
+	Duplicate_Entry,
+	Invalid_Hash,
+	Buffer_Full,
 	runtime.Allocator_Error,
 }
 
 Path_Not_Absolute :: struct {}
+Missing_Path :: struct {}
+Duplicate_Entry :: struct {}
+Invalid_Hash :: struct {}
+Buffer_Full :: struct {}
 
 @(require_results)
 collection_create :: proc(root: string, name: string) -> (c: Collection, err: CollectionError) {
@@ -36,8 +44,8 @@ collection_create :: proc(root: string, name: string) -> (c: Collection, err: Co
 }
 
 collection_destroy :: proc(c: ^Collection) {
-	delete(c.path_to_file)
 	arena_alloc := virtual.arena_allocator(&c.arena)
+	delete(c.path_to_file)
 	free_all(arena_alloc)
 }
 
