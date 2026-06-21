@@ -55,6 +55,21 @@ matcher_destroy :: proc(m: ^Matcher) {
     delete(m.block)
 }
 
+matcher_from :: proc(allow: []string, block: []string) -> (m: Matcher, err: Error) {
+    b := Matcher_Builder{}
+
+    for patt in allow {
+        matcher_builder_allow(&b, patt) or_return
+    }
+
+    for patt in block {
+        matcher_builder_block(&b, patt) or_return
+    }
+
+    m = matcher_builder_build(&b)
+    return
+}
+
 Matcher_Builder :: struct {
     allow: [dynamic]glob.Pattern,
     block: [dynamic]glob.Pattern,
