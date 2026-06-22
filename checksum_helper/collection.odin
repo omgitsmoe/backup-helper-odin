@@ -19,11 +19,18 @@ CollectionError :: union {
 	Duplicate_Entry,
 	Invalid_Hash,
 	Buffer_Full,
+	Malformed_Header,
+	Malformed_Hash_Line,
 	runtime.Allocator_Error,
 }
 
 Path_Not_Absolute :: struct {}
 Missing_Path :: struct {}
+Malformed_Header :: struct {}
+Malformed_Hash_Line :: struct {
+	line:  string,
+	index: int,
+}
 Duplicate_Entry :: struct {}
 Invalid_Hash :: struct {}
 Buffer_Full :: struct {}
